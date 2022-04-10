@@ -53,8 +53,23 @@ function campRegistrar_TransferDomain($vars)
 
 function campRegistrar_GetEPPCode($vars)
 {
+    $api = new Api($vars['baseUrl']);
+    $register = new multiRegistrar($vars['apiToken'], $api);
 
-    return "12234564";
+    try {
+        $res = $register->getEpp($vars['domain_punycode']);
+        $resArray = json_decode($res);
+        $trackId = $resArray->trackId;
+
+        $eppCode = $register->ManageInquiry($trackId);
+        # send Epp Code in User :
+        file_put_contents(__DIR__ . '/log.json', $eppCode->data['epp']);
+    } catch (\Throwable $e) {
+        return [
+            'error' => $e->getMessage()
+        ];
+    }
+
 }
 
 function campRegistrar_GetNameservers($vars)
@@ -87,11 +102,11 @@ function campRegistrar_SaveNameservers($vars)
     $register = new multiRegistrar($vars['apiToken'], $api);
 
     $dnsList = [
-      $vars['ns1'],
-      $vars['ns2'],
-      $vars['ns3'],
-      $vars['ns4'],
-      $vars['ns5']
+        $vars['ns1'],
+        $vars['ns2'],
+        $vars['ns3'],
+        $vars['ns4'],
+        $vars['ns5']
     ];
     $res = $register->updateDns($vars['domain_punycode'], $dnsList);
 
@@ -100,3 +115,4 @@ function campRegistrar_SaveNameservers($vars)
         'success' => true,
     );
 }
+

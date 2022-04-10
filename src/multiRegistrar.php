@@ -62,12 +62,17 @@ class multiRegistrar
         return $this->api->request('get', "/domain/{$domain}/epp", $this->getHeaders());
     }
 
+    public function ManageInquiry($tackId)
+    {
+
+        return $this->api->request('get', "/manage/inquiry/$tackId", $this->getHeaders());
+    }
+
     public function whois($domain)
     {
 
         return $this->api->request('get', "/domain/{$domain}", $this->getHeaders());
     }
-
 
     private function getHeaders()
     {
